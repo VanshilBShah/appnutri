@@ -225,7 +225,7 @@ STATS = {
 }
 
 PROFILE = {
-    "name": "Amelia",
+    "name": "Vans",
     "tagline": "Earth-first since 2025",
     "member_since": "March 2025",
     "total_points": 420,

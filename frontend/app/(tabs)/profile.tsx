@@ -31,7 +31,7 @@ export default function Profile() {
         {/* Profile header */}
         <View style={styles.profileCard} testID="profile-card">
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{initials}</Text>
+            <Image source={{ uri: LOGO }} style={styles.avatarLogo} />
           </View>
           <Text style={styles.name}>{profile?.name ?? '—'}</Text>
           <Text style={styles.tagline}>{profile?.tagline ?? ''}</Text>
@@ -123,7 +123,8 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: Spacing.l, paddingTop: Spacing.m, paddingBottom: Spacing.xxl },
 
   profileCard: { marginTop: Spacing.m, backgroundColor: Colors.card, borderRadius: Radius.xl, padding: Spacing.l, alignItems: 'center', borderWidth: 1, borderColor: Colors.border, ...Shadow.card },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  avatarLogo: { width: 64, height: 64, resizeMode: 'contain' },
   avatarText: { fontFamily: Fonts.bold, fontSize: 28, color: Colors.onPrimary },
   name: { fontFamily: Fonts.bold, fontSize: 22, color: Colors.text, letterSpacing: -0.4, marginTop: 12 },
   tagline: { fontFamily: Fonts.medium, fontSize: 12, color: Colors.textMuted, marginTop: 4 },
@@ -150,4 +151,6 @@ const styles = StyleSheet.create({
   badgeName: { fontFamily: Fonts.bold, fontSize: 13, color: Colors.text, marginTop: 10, letterSpacing: -0.2 },
   badgeDesc: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 2, lineHeight: 15 },
   lockTag: { position: 'absolute', top: 12, right: 12, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center' },
+});
+ght: 20, borderRadius: 10, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center' },
 });
