@@ -152,5 +152,3 @@ const styles = StyleSheet.create({
   badgeDesc: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 2, lineHeight: 15 },
   lockTag: { position: 'absolute', top: 12, right: 12, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center' },
 });
-ght: 20, borderRadius: 10, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center' },
-});
