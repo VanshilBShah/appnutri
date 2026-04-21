@@ -1,0 +1,179 @@
+{
+  "theme": "light",
+  "archetype": "1_organic_and_earthy",
+  "brand_identity": {
+    "name": "NutriLoop",
+    "description": "Sustainable, regenerative packaging brand. Packaging dissolves into nutrients in soil/water.",
+    "emotional_tone": "Calm, natural, optimistic, earth-first innovation, rewarding.",
+    "visual_style": "Clean minimal nature-inspired, generous whitespace, airy, premium, with subtle thin diagonal line textures."
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#1E4A2F",
+      "foreground": "#FFFFFF",
+      "hover": "#173A24"
+    },
+    "secondary": {
+      "DEFAULT": "#5F7F4D",
+      "foreground": "#FFFFFF",
+      "hover": "#4D6A3E"
+    },
+    "background": {
+      "DEFAULT": "#F9F8F6",
+      "card": "#FFFFFF",
+      "accent": "#F0EFEA"
+    },
+    "text": {
+      "primary": "#222222",
+      "muted": "#5C5C5C"
+    },
+    "border": {
+      "DEFAULT": "#E5E4E0",
+      "focus": "#5F7F4D"
+    },
+    "status": {
+      "success": "#5F7F4D",
+      "warning": "#E8B042",
+      "error": "#D9534F",
+      "info": "#4A90E2"
+    }
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Montserrat, sans-serif",
+      "body": "Montserrat, sans-serif"
+    },
+    "scale": {
+      "h1": "text-4xl tracking-tight font-bold text-[#222222]",
+      "h2": "text-2xl tracking-tight font-semibold text-[#222222]",
+      "h3": "text-xl tracking-tight font-medium text-[#222222]",
+      "body": "text-base leading-relaxed text-[#222222]",
+      "muted": "text-sm text-[#5C5C5C]",
+      "overline": "text-xs tracking-[0.2em] uppercase font-bold text-[#5F7F4D]"
+    }
+  },
+  "spacing_and_layout": {
+    "container": "max-w-md mx-auto min-h-screen bg-[#F9F8F6] relative pb-24 shadow-2xl overflow-x-hidden",
+    "padding": {
+      "section": "p-6",
+      "card": "p-6",
+      "screen": "px-6 py-8"
+    },
+    "patterns": {
+      "bento_grid": "grid grid-cols-2 gap-4",
+      "lists": "flex flex-col gap-4",
+      "alignment": "left-aligned for text/data, center for empty states or hero."
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#1E4A2F] text-white rounded-full py-4 px-6 font-medium active:scale-95 transition-transform hover:bg-[#173A24]",
+      "secondary": "bg-[#5F7F4D]/10 text-[#1E4A2F] rounded-full py-4 px-6 font-medium active:scale-95 transition-transform hover:bg-[#5F7F4D]/20",
+      "ghost": "text-[#5C5C5C] hover:text-[#1E4A2F] py-4 px-6 active:scale-95 transition-transform"
+    },
+    "cards": {
+      "default": "bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E5E4E0]/50",
+      "interactive": "hover:-translate-y-1 transition-transform cursor-pointer active:scale-[0.98]",
+      "glass": "backdrop-blur-xl bg-white/70 border border-white/40 shadow-sm rounded-3xl"
+    },
+    "navigation": {
+      "bottom_tab": "fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-20 bg-white/90 backdrop-blur-xl border-t border-[#E5E4E0] flex justify-around items-center px-4 z-50 rounded-t-3xl pb-safe"
+    },
+    "visual_enhancers": {
+      "texture": "Use background image with subtle diagonal lines (opacity 5%) or CSS repeating-linear-gradient for texture.",
+      "icons": "lucide-react, 1.5 stroke width, rounded.",
+      "borders": "Soft, rounded-3xl for major elements, nested radii."
+    }
+  },
+  "motion": {
+    "transitions": "transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]",
+    "stagger": "Stagger list items by 50ms on enter."
+  },
+  "screens": [
+    {
+      "name": "Home Dashboard",
+      "description": "Impact stats overview (CO2 saved, packages dissolved).",
+      "layout": "Hero greeting with user name + Overline. Top impact metric prominent. Bento grid for secondary metrics. Latest activity list.",
+      "components_needed": ["Card", "Progress (Shadcn) - custom rounded", "BottomTab"]
+    },
+    {
+      "name": "Disposal Guide",
+      "description": "Scan or search packaging to see dissolution instructions.",
+      "layout": "Camera viewfinder placeholder (Glassmorphism overlay), search bar, list of recent scans or popular materials.",
+      "components_needed": ["Input", "Button", "GlassCard"]
+    },
+    {
+      "name": "Eco-Garden",
+      "description": "Gamified visualization of user impact (growing plants).",
+      "layout": "Large central plant image/3D asset. Progress bar to next growth stage. Stats on top.",
+      "components_needed": ["Image", "ProgressBar"]
+    },
+    {
+      "name": "Education Hub",
+      "description": "Articles on circular design and soil health.",
+      "layout": "Horizontal scroll or vertical list of articles. Cards with image + text + tags.",
+      "components_needed": ["Card", "Badge", "ScrollArea"]
+    },
+    {
+      "name": "Profile & Rewards",
+      "description": "User history and challenges.",
+      "layout": "Avatar, lifetime stats, list of unlocked badges/rewards.",
+      "components_needed": ["Avatar", "Tabs (Shadcn)"]
+    }
+  ],
+  "media": {
+    "hero_textures": [
+      {
+        "url": "https://images.unsplash.com/photo-1601662528567-526cd06f6582?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwxfHxwYXBlciUyMHRleHR1cmUlMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3Njc4ODE5OHww&ixlib=rb-4.1.0&q=85",
+        "description": "Subtle lined paper texture for background overlays (use with mix-blend-multiply and low opacity 5-10%)",
+        "category": "background_texture"
+      }
+    ],
+    "eco_garden_assets": [
+      {
+        "url": "https://images.pexels.com/photos/7944395/pexels-photo-7944395.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Plant sprouting from rich soil",
+        "category": "eco_garden_growth"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1724893973380-7204358348a6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwyfHxwbGFudCUyMHNwcm91dCUyMHNvaWx8ZW58MHx8fHwxNzc2Nzg4MTkzfDA&ixlib=rb-4.1.0&q=85",
+        "description": "Small green plants growing",
+        "category": "eco_garden_level_1"
+      }
+    ],
+    "packaging_images": [
+      {
+        "url": "https://images.pexels.com/photos/10793124/pexels-photo-10793124.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Eco-friendly packaging materials (use for Disposal Guide placeholder/hero)",
+        "category": "disposal_guide_hero"
+      }
+    ],
+    "article_images": [
+      {
+        "url": "https://images.unsplash.com/photo-1681178519331-09cdb1e3ff19?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwyfHxncmVlbiUyMGxlYWYlMjBtaW5pbWFsfGVufDB8fHx8MTc3Njc4ODE5M3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Minimal large green leaf",
+        "category": "education_hub_thumbnail"
+      },
+      {
+        "url": "https://images.pexels.com/photos/13567645/pexels-photo-13567645.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Solitary green leaf on beige",
+        "category": "education_hub_thumbnail"
+      }
+    ]
+  },
+  "accessibility": {
+    "contrast": "Ensure white text on Forest Green (#1E4A2F) and Seaweed Green (#5F7F4D) passes WCAG AA.",
+    "focus": "focus-visible:ring-2 focus-visible:ring-[#5F7F4D] focus-visible:ring-offset-2",
+    "test_ids": "All interactive elements must include data-testid (e.g. data-testid='bottom-tab-home')"
+  },
+  "instructions_to_main_agent": [
+    "Build a mobile-first web app using React and Tailwind. To simulate the mobile experience on desktop, wrap the main layout in a max-w-md mx-auto container with a min-h-screen, bg-[#F9F8F6], overflow-x-hidden, and a soft shadow.",
+    "Use standard HTML/Tailwind for custom layouts, avoiding Shadcn generic cards if they conflict with the rounded-3xl soft organic aesthetic.",
+    "Implement bottom tab navigation fixed to the bottom of the layout (constrained to the max-w-md container).",
+    "Use Montserrat font globally. Import from Google Fonts. Do not use Inter.",
+    "Implement the 'subtle thin diagonal line texture' by either using the provided paper texture image as a low-opacity background overlay, or via a custom Tailwind background pattern (e.g. repeating-linear-gradient).",
+    "Do NOT use pure #000000 or #FFFFFF for backgrounds. Lean on #F9F8F6 (warm off-white) for the app background and #222222 for deep text.",
+    "For the Eco-Garden, use the provided plant sprout images.",
+    "Always apply data-testid to buttons, inputs, and nav items."
+  ]
+}
