@@ -6,7 +6,7 @@ import { Colors, Fonts, Radius, Spacing, Shadow } from '../../src/theme';
 import { Card, Overline, SectionTitle, Progress } from '../../src/ui';
 import { api, Stats, Activity } from '../../src/api';
 
-const LOGO = 'https://customer-assets.emergentagent.com/job_palette-craft-8/artifacts/paema9ar_Nutriloop%20Logo.png';
+const LOGO = 'https://customer-assets.emergentagent.com/job_palette-craft-8/artifacts/nkc64vpr_Nutriloop%20Logo.png';
 
 export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -41,13 +41,8 @@ export default function Home() {
         {/* Brand bar */}
         <View style={styles.brandBar} testID="brand-bar">
           <View style={styles.brandLeft}>
-            <View style={styles.logoBadge}>
-              <Image source={{ uri: LOGO }} style={styles.logoImg} />
-            </View>
-            <View>
-              <Text style={styles.brandName}>NutriLoop</Text>
-              <Text style={styles.brandTag}>Where waste becomes life</Text>
-            </View>
+            <Image source={{ uri: LOGO }} style={styles.logoImg} />
+            <Text style={styles.brandName}>NutriLoop</Text>
           </View>
           <TouchableOpacity style={styles.bell} testID="home-notifications">
             <Ionicons name="notifications-outline" size={20} color={Colors.text} />
@@ -156,11 +151,9 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   scroll: { paddingHorizontal: Spacing.l, paddingBottom: Spacing.xxl },
   brandBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Spacing.m },
-  brandLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  logoBadge: { width: 44, height: 44, borderRadius: 14, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  logoImg: { width: 42, height: 42, resizeMode: 'contain' },
-  brandName: { fontFamily: Fonts.black, fontSize: 18, color: Colors.primary, letterSpacing: -0.4 },
-  brandTag: { fontFamily: Fonts.medium, fontSize: 10, color: Colors.textMuted, letterSpacing: 0.3, marginTop: 2 },
+  brandLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoImg: { width: 28, height: 28, resizeMode: 'contain' },
+  brandName: { fontFamily: Fonts.semibold, fontSize: 15, color: Colors.primary, letterSpacing: -0.2 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: Spacing.xl, marginBottom: Spacing.l },
   hello: { fontFamily: Fonts.bold, fontSize: 28, color: Colors.text, letterSpacing: -0.6, marginTop: 4 },
   bell: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.card, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.border },

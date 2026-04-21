@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Fonts, Radius, Spacing, Shadow } from '../../src/theme';
 import { Card, Overline, Progress, Pill } from '../../src/ui';
 import { api, Profile as ProfileT, Challenge, Badge, Stats } from '../../src/api';
+
+const LOGO = 'https://customer-assets.emergentagent.com/job_palette-craft-8/artifacts/nkc64vpr_Nutriloop%20Logo.png';
 
 export default function Profile() {
   const [profile, setProfile] = useState<ProfileT | null>(null);
@@ -123,8 +125,8 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: Spacing.l, paddingTop: Spacing.m, paddingBottom: Spacing.xxl },
 
   profileCard: { marginTop: Spacing.m, backgroundColor: Colors.card, borderRadius: Radius.xl, padding: Spacing.l, alignItems: 'center', borderWidth: 1, borderColor: Colors.border, ...Shadow.card },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarLogo: { width: 64, height: 64, resizeMode: 'contain' },
+  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: Colors.secondaryMuted, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  avatarLogo: { width: 56, height: 56, resizeMode: 'contain' },
   avatarText: { fontFamily: Fonts.bold, fontSize: 28, color: Colors.onPrimary },
   name: { fontFamily: Fonts.bold, fontSize: 22, color: Colors.text, letterSpacing: -0.4, marginTop: 12 },
   tagline: { fontFamily: Fonts.medium, fontSize: 12, color: Colors.textMuted, marginTop: 4 },
