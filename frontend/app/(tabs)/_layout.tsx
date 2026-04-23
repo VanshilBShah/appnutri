@@ -9,25 +9,25 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: '#A8A8A3',
-        tabBarLabelStyle: { fontFamily: Fonts.semibold, fontSize: 10, letterSpacing: 0.3 },
+        tabBarInactiveTintColor: Colors.textSubtle,
+        tabBarLabelStyle: { fontFamily: Fonts.medium, fontSize: 9, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 2 },
         tabBarStyle: styles.tabBar,
-        tabBarItemStyle: { paddingTop: 6 },
+        tabBarItemStyle: { paddingTop: 8 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => <TabIcon name="home" color={color} focused={focused} testID="tab-home-icon" />,
+          tabBarIcon: ({ color, focused }) => <TabIcon name="radio-outline" color={color} focused={focused} testID="tab-home-icon" />,
           tabBarButtonTestID: 'tab-home',
         }}
       />
       <Tabs.Screen
         name="disposal"
         options={{
-          title: 'Dissolve',
-          tabBarIcon: ({ color, focused }) => <TabIcon name="water-outline" color={color} focused={focused} testID="tab-disposal-icon" />,
+          title: 'Scan',
+          tabBarIcon: ({ color, focused }) => <TabIcon name="scan-outline" color={color} focused={focused} testID="tab-disposal-icon" />,
           tabBarButtonTestID: 'tab-disposal',
         }}
       />
@@ -35,23 +35,23 @@ export default function TabsLayout() {
         name="garden"
         options={{
           title: 'Garden',
-          tabBarIcon: ({ color, focused }) => <TabIcon name="leaf" color={color} focused={focused} testID="tab-garden-icon" />,
+          tabBarIcon: ({ color, focused }) => <TabIcon name="leaf-outline" color={color} focused={focused} testID="tab-garden-icon" />,
           tabBarButtonTestID: 'tab-garden',
         }}
       />
       <Tabs.Screen
         name="learn"
         options={{
-          title: 'Learn',
-          tabBarIcon: ({ color, focused }) => <TabIcon name="book-outline" color={color} focused={focused} testID="tab-learn-icon" />,
+          title: 'Index',
+          tabBarIcon: ({ color, focused }) => <TabIcon name="grid-outline" color={color} focused={focused} testID="tab-learn-icon" />,
           tabBarButtonTestID: 'tab-learn',
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, focused }) => <TabIcon name="person-outline" color={color} focused={focused} testID="tab-profile-icon" />,
+          title: 'Me',
+          tabBarIcon: ({ color, focused }) => <TabIcon name="ellipse-outline" color={color} focused={focused} testID="tab-profile-icon" />,
           tabBarButtonTestID: 'tab-profile',
         }}
       />
@@ -61,29 +61,28 @@ export default function TabsLayout() {
 
 function TabIcon({ name, color, focused, testID }: { name: any; color: string; focused: boolean; testID: string }) {
   return (
-    <View style={[styles.iconWrap, focused && styles.iconWrapActive]} testID={testID}>
+    <View style={styles.iconWrap} testID={testID}>
       <Ionicons name={name} size={20} color={color} />
+      {focused && <View style={styles.dot} />}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.background,
     borderTopColor: Colors.border,
-    borderTopWidth: 1,
-    height: Platform.OS === 'ios' ? 86 : 72,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 10,
-    paddingTop: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    height: Platform.OS === 'ios' ? 84 : 68,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+    paddingTop: 6,
   },
-  iconWrap: {
-    width: 42,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconWrapActive: {
-    backgroundColor: Colors.secondaryMuted,
+  iconWrap: { alignItems: 'center', justifyContent: 'center' },
+  dot: {
+    width: 3,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: Colors.primary,
+    marginTop: 3,
   },
 });

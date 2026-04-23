@@ -2,11 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Fonts, Radius, Spacing, Shadow } from '../../src/theme';
-import { Card, Overline, Progress, Pill } from '../../src/ui';
+import { Colors, Fonts, Radius, Spacing, LOGO } from '../../src/theme';
+import { Label, Divider, Progress } from '../../src/ui';
 import { api, Profile as ProfileT, Challenge, Badge, Stats } from '../../src/api';
-
-const LOGO = 'https://customer-assets.emergentagent.com/job_palette-craft-8/artifacts/nkc64vpr_Nutriloop%20Logo.png';
 
 export default function Profile() {
   const [profile, setProfile] = useState<ProfileT | null>(null);
@@ -23,74 +21,90 @@ export default function Profile() {
 
   useEffect(() => { load(); }, [load]);
 
-  const initials = profile?.name?.slice(0, 1) ?? 'N';
-
   return (
     <SafeAreaView style={styles.safe} edges={['top']} testID="profile-screen">
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Overline>Profile</Overline>
+        <View style={styles.headerRow}>
+          <Label>04 · Profile</Label>
+          <Text style={styles.title}>Operator.</Text>
+        </View>
 
-        {/* Profile header */}
-        <View style={styles.profileCard} testID="profile-card">
+        <Divider />
+
+        {/* Avatar block */}
+        <View style={styles.profileBlock} testID="profile-card">
           <View style={styles.avatar}>
-            <Image source={{ uri: LOGO }} style={styles.avatarLogo} />
+            <Image source={{ uri: LOGO }} style={styles.avatarImg} />
           </View>
-          <Text style={styles.name}>{profile?.name ?? '—'}</Text>
-          <Text style={styles.tagline}>{profile?.tagline ?? ''}</Text>
-          <View style={styles.profileMeta}>
-            <View style={styles.metaItem}>
-              <Text style={styles.metaValue}>{profile?.total_points ?? 0}</Text>
-              <Text style={styles.metaLabel}>points</Text>
-            </View>
-            <View style={styles.metaDivider} />
-            <View style={styles.metaItem}>
-              <Text style={styles.metaValue}>{profile?.rank ?? '—'}</Text>
-              <Text style={styles.metaLabel}>rank</Text>
-            </View>
-            <View style={styles.metaDivider} />
-            <View style={styles.metaItem}>
-              <Text style={styles.metaValue}>{stats?.packages_dissolved ?? 0}</Text>
-              <Text style={styles.metaLabel}>dissolved</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.name}>{profile?.name ?? '—'}</Text>
+            <Text style={styles.tagline}>{profile?.tagline ?? ''}</Text>
+            <View style={styles.rankRow}>
+              <View style={styles.rankDot} />
+              <Text style={styles.rankText}>{(profile?.rank ?? '—').toUpperCase()} · SINCE {(profile?.member_since ?? '').toUpperCase()}</Text>
             </View>
           </View>
         </View>
 
+        <Divider />
+
+        {/* Stat strip */}
+        <View style={styles.statsRow}>
+          <StatCol label="POINTS" value={profile?.total_points ?? 0} />
+          <View style={styles.vd} />
+          <StatCol label="DISSOLVED" value={stats?.packages_dissolved ?? 0} />
+          <View style={styles.vd} />
+          <StatCol label="STREAK" value={`${stats?.streak_days ?? 0}d`} />
+        </View>
+
+        <Divider />
+
         {/* Challenges */}
-        <Text style={styles.sectionHead}>Active challenges</Text>
-        <View style={{ gap: Spacing.m }}>
-          {challenges.map(c => (
-            <Card key={c.id} style={styles.challengeCard} testID={`challenge-${c.id}`}>
+        <View style={styles.sectionHead}>
+          <Label>Active challenges</Label>
+          <Text style={styles.count}>[ {challenges.filter(c => !c.completed).length} ]</Text>
+        </View>
+
+        <View>
+          {challenges.map((c, idx) => (
+            <View key={c.id} style={[styles.challengeRow, idx < challenges.length - 1 && styles.rowBorder]} testID={`challenge-${c.id}`}>
               <View style={styles.challengeHead}>
-                <View style={[styles.challengeIcon, c.completed && { backgroundColor: Colors.primary }]}>
-                  <Ionicons name={iconFor(c.icon)} size={18} color={c.completed ? Colors.onPrimary : Colors.primary} />
-                </View>
+                <Text style={styles.challengeIdx}>{String(idx + 1).padStart(2, '0')}</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.challengeTitle}>{c.title}</Text>
                   <Text style={styles.challengeDesc}>{c.description}</Text>
                 </View>
-                {c.completed ? (
-                  <Pill label="Done" tone="dark" />
-                ) : (
-                  <Text style={styles.challengeReward}>+{c.reward_points}</Text>
-                )}
+                <Text style={[styles.challengeReward, c.completed && { color: Colors.textSubtle, textDecorationLine: 'line-through' }]}>
+                  +{c.reward_points}
+                </Text>
               </View>
-              <View style={{ marginTop: Spacing.m }}>
-                <Progress value={c.progress} color={c.completed ? Colors.primary : Colors.secondary} />
-                <Text style={styles.challengeMeta}>{c.current}/{c.target}</Text>
+              <View style={styles.challengeFooter}>
+                <Progress value={c.progress} color={c.completed ? Colors.secondary : Colors.primary} />
+                <Text style={styles.challengeStatus}>{c.current}/{c.target} {c.completed ? '· COMPLETE' : ''}</Text>
               </View>
-            </Card>
+            </View>
           ))}
         </View>
 
+        <Divider />
+
         {/* Badges */}
-        <Text style={styles.sectionHead}>Badges</Text>
+        <View style={styles.sectionHead}>
+          <Label>Badges</Label>
+          <Text style={styles.count}>[ {badges.filter(b => b.unlocked).length}/{badges.length} ]</Text>
+        </View>
+
         <View style={styles.badgeGrid}>
           {badges.map(b => (
             <View key={b.id} style={[styles.badge, !b.unlocked && styles.badgeLocked]} testID={`badge-${b.id}`}>
-              <View style={[styles.badgeIcon, b.unlocked ? { backgroundColor: Colors.secondaryMuted } : { backgroundColor: Colors.accent }]}>
-                <Ionicons name={iconFor(b.icon)} size={22} color={b.unlocked ? Colors.primary : Colors.textSubtle} />
+              <View style={[styles.badgeIcon, b.unlocked && styles.badgeIconOn]}>
+                <Ionicons
+                  name={iconFor(b.icon)}
+                  size={18}
+                  color={b.unlocked ? Colors.primary : Colors.textSubtle}
+                />
               </View>
-              <Text style={[styles.badgeName, !b.unlocked && { color: Colors.textMuted }]} numberOfLines={1}>{b.name}</Text>
+              <Text style={[styles.badgeName, !b.unlocked && { color: Colors.textSubtle }]}>{b.name.toUpperCase()}</Text>
               <Text style={styles.badgeDesc} numberOfLines={2}>{b.description}</Text>
               {!b.unlocked && (
                 <View style={styles.lockTag}>
@@ -104,6 +118,15 @@ export default function Profile() {
         <View style={{ height: Spacing.xxl }} />
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function StatCol({ label, value }: { label: string; value: any }) {
+  return (
+    <View style={{ flex: 1, gap: 6 }}>
+      <Text style={styles.colLabel}>{label}</Text>
+      <Text style={styles.colValue}>{value}</Text>
+    </View>
   );
 }
 
@@ -122,35 +145,43 @@ function iconFor(name: string): any {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
-  scroll: { paddingHorizontal: Spacing.l, paddingTop: Spacing.m, paddingBottom: Spacing.xxl },
+  scroll: { paddingHorizontal: Spacing.l, paddingBottom: Spacing.xxl },
+  headerRow: { paddingVertical: Spacing.l, gap: 12 },
+  title: { fontFamily: Fonts.thin, fontSize: 40, color: Colors.text, letterSpacing: -1.2, lineHeight: 44, marginTop: 8 },
 
-  profileCard: { marginTop: Spacing.m, backgroundColor: Colors.card, borderRadius: Radius.xl, padding: Spacing.l, alignItems: 'center', borderWidth: 1, borderColor: Colors.border, ...Shadow.card },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: Colors.secondaryMuted, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarLogo: { width: 56, height: 56, resizeMode: 'contain' },
-  avatarText: { fontFamily: Fonts.bold, fontSize: 28, color: Colors.onPrimary },
-  name: { fontFamily: Fonts.bold, fontSize: 22, color: Colors.text, letterSpacing: -0.4, marginTop: 12 },
-  tagline: { fontFamily: Fonts.medium, fontSize: 12, color: Colors.textMuted, marginTop: 4 },
-  profileMeta: { flexDirection: 'row', marginTop: Spacing.l, alignItems: 'center', backgroundColor: Colors.accent, borderRadius: Radius.lg, paddingVertical: Spacing.m, paddingHorizontal: Spacing.m, alignSelf: 'stretch' },
-  metaItem: { flex: 1, alignItems: 'center' },
-  metaValue: { fontFamily: Fonts.bold, fontSize: 18, color: Colors.text, letterSpacing: -0.3 },
-  metaLabel: { fontFamily: Fonts.medium, fontSize: 10, color: Colors.textMuted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 2 },
-  metaDivider: { width: 1, height: 24, backgroundColor: Colors.border },
+  profileBlock: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: Spacing.l },
+  avatar: { width: 60, height: 60, borderRadius: 30, borderWidth: 1, borderColor: Colors.primary, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: Colors.surface },
+  avatarImg: { width: 48, height: 48, resizeMode: 'contain' },
+  name: { fontFamily: Fonts.light, fontSize: 24, color: Colors.text, letterSpacing: -0.6 },
+  tagline: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 4 },
+  rankRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 },
+  rankDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.primary },
+  rankText: { fontFamily: Fonts.semibold, fontSize: 9, color: Colors.textMuted, letterSpacing: 1.5 },
 
-  sectionHead: { fontFamily: Fonts.bold, fontSize: 18, color: Colors.text, letterSpacing: -0.3, marginTop: Spacing.xl, marginBottom: Spacing.m },
+  statsRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.l },
+  colLabel: { fontFamily: Fonts.semibold, fontSize: 9, color: Colors.textSubtle, letterSpacing: 1.5 },
+  colValue: { fontFamily: Fonts.light, fontSize: 26, color: Colors.text, letterSpacing: -0.6 },
+  vd: { width: StyleSheet.hairlineWidth, backgroundColor: Colors.border, height: 40, marginHorizontal: Spacing.m },
 
-  challengeCard: {},
-  challengeHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  challengeIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.secondaryMuted, alignItems: 'center', justifyContent: 'center' },
-  challengeTitle: { fontFamily: Fonts.semibold, fontSize: 14, color: Colors.text },
-  challengeDesc: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 2 },
-  challengeReward: { fontFamily: Fonts.bold, fontSize: 13, color: Colors.primary },
-  challengeMeta: { fontFamily: Fonts.medium, fontSize: 11, color: Colors.textMuted, marginTop: 6 },
+  sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Spacing.l, paddingBottom: Spacing.s },
+  count: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textSubtle, letterSpacing: 1 },
 
-  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.m },
-  badge: { width: '47.5%', backgroundColor: Colors.card, borderRadius: Radius.lg, padding: Spacing.m, alignItems: 'flex-start', borderWidth: 1, borderColor: Colors.border, position: 'relative' },
-  badgeLocked: { backgroundColor: Colors.accent, borderColor: Colors.border },
-  badgeIcon: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  badgeName: { fontFamily: Fonts.bold, fontSize: 13, color: Colors.text, marginTop: 10, letterSpacing: -0.2 },
-  badgeDesc: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 2, lineHeight: 15 },
-  lockTag: { position: 'absolute', top: 12, right: 12, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center' },
+  challengeRow: { paddingVertical: 16 },
+  rowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
+  challengeHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  challengeIdx: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textSubtle, letterSpacing: 1, width: 24, marginTop: 4 },
+  challengeTitle: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.text, letterSpacing: -0.1 },
+  challengeDesc: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 4, lineHeight: 16 },
+  challengeReward: { fontFamily: Fonts.bold, fontSize: 13, color: Colors.primary, letterSpacing: 0.3 },
+  challengeFooter: { marginTop: 12, marginLeft: 36 },
+  challengeStatus: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textMuted, letterSpacing: 1, marginTop: 6 },
+
+  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: Spacing.s },
+  badge: { width: '47%', padding: Spacing.m, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, position: 'relative', minHeight: 120 },
+  badgeLocked: { opacity: 0.6 },
+  badgeIcon: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.hairline },
+  badgeIconOn: { backgroundColor: Colors.secondaryMuted, borderWidth: 1, borderColor: Colors.primaryDim },
+  badgeName: { fontFamily: Fonts.semibold, fontSize: 11, color: Colors.text, letterSpacing: 1.5, marginTop: 12 },
+  badgeDesc: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textMuted, marginTop: 4, lineHeight: 14 },
+  lockTag: { position: 'absolute', top: 12, right: 12 },
 });

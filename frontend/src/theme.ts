@@ -1,39 +1,41 @@
 export const Colors = {
-  // Brand
-  primary: '#1E4A2F',
-  primaryHover: '#173A24',
-  secondary: '#5F7F4D',
-  secondaryMuted: '#E8EEE3',
+  // Brand → futuristic roles
+  primary: '#B8E4A1',        // sprout glow (bright accent for data)
+  secondary: '#5F7F4D',      // seaweed (mid accent)
+  primaryDim: '#3A5C28',     // dimmed accent for borders/tracks
 
-  // Backgrounds
-  background: '#F9F8F6',
-  card: '#FFFFFF',
-  accent: '#F0EFEA',
+  // Surfaces
+  background: '#0A0D0B',     // deep near-black forest
+  surface: '#10140F',        // card
+  surfaceRaised: '#161B15',  // elevated card
+  overlay: 'rgba(184, 228, 161, 0.06)',
 
   // Text
-  text: '#222222',
-  textMuted: '#5C5C5C',
-  textSubtle: '#8A8A85',
+  text: '#EAEEE8',
+  textMuted: '#8A948A',
+  textSubtle: '#5A645B',
 
   // Border
-  border: '#E5E4E0',
-  borderStrong: '#D4D3CD',
+  border: '#1D231C',
+  borderStrong: '#2A3128',
+  hairline: '#141813',
 
   // Status
-  success: '#5F7F4D',
+  success: '#B8E4A1',
   warning: '#E8B042',
-  error: '#D9534F',
+  error: '#E07E6A',
 
-  // On-brand whites
-  onPrimary: '#FFFFFF',
-  overlay: 'rgba(30, 74, 47, 0.08)',
+  onPrimary: '#0A0D0B',
+  card: '#10140F',
+  accent: '#161B15',
+  secondaryMuted: '#1A2217',
 };
 
 export const Radius = {
-  sm: 10,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  sm: 6,
+  md: 10,
+  lg: 16,
+  xl: 22,
   pill: 999,
 };
 
@@ -47,6 +49,9 @@ export const Spacing = {
 };
 
 export const Fonts = {
+  thin: 'Montserrat_100Thin',
+  extraLight: 'Montserrat_200ExtraLight',
+  light: 'Montserrat_300Light',
   regular: 'Montserrat_400Regular',
   medium: 'Montserrat_500Medium',
   semibold: 'Montserrat_600SemiBold',
@@ -56,19 +61,21 @@ export const Fonts = {
 
 export const Shadow = {
   card: {
-    shadowColor: '#1E4A2F',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
     shadowRadius: 18,
-    elevation: 3,
+    elevation: 4,
   },
   soft: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
     elevation: 1,
   },
 };
 
 export const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+
+export const LOGO = 'https://customer-assets.emergentagent.com/job_palette-craft-8/artifacts/nkc64vpr_Nutriloop%20Logo.png';

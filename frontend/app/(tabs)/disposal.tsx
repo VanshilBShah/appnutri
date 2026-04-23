@@ -1,113 +1,112 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, Fonts, Radius, Spacing, Shadow } from '../../src/theme';
-import { Overline, Pill } from '../../src/ui';
+import { Colors, Fonts, Radius, Spacing } from '../../src/theme';
+import { Label, Divider, Chip } from '../../src/ui';
 import { api, Material } from '../../src/api';
 
 export default function Disposal() {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [query, setQuery] = useState('');
+  const [active, setActive] = useState('ALL');
   const router = useRouter();
 
-  useEffect(() => {
-    api.materials().then(setMaterials).catch(() => {});
-  }, []);
+  useEffect(() => { api.materials().then(setMaterials).catch(() => {}); }, []);
 
   const filtered = useMemo(() => {
-    if (!query) return materials;
     const q = query.toLowerCase();
-    return materials.filter(m => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
-  }, [materials, query]);
-
-  const categories = ['All', 'Shipping', 'Food'];
-  const [active, setActive] = useState('All');
-
-  const visible = active === 'All' ? filtered : filtered.filter(m => m.category === active);
-
-  const handleScan = () => {
-    Alert.alert(
-      'Camera scan',
-      'Point your camera at the NutriLoop QR on the package to auto-detect the material. (Demo: pick a material from the list below)',
-      [{ text: 'Got it' }],
+    return materials.filter(m =>
+      (active === 'ALL' || m.category.toLowerCase() === active.toLowerCase()) &&
+      (m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q))
     );
-  };
+  }, [materials, query, active]);
+
+  const handleScan = () => Alert.alert('Scan mode', 'Camera scan coming online. Select from the index below for now.');
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']} testID="disposal-screen">
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Overline>Dissolve guide</Overline>
-        <Text style={styles.title}>Where waste{'\n'}becomes life.</Text>
-        <Text style={styles.sub}>Scan a package or pick from the list to see exactly how to dissolve it.</Text>
+        <View style={styles.headerRow}>
+          <View>
+            <Label>01 · Scan</Label>
+            <Text style={styles.title}>Identify{'\n'}material.</Text>
+          </View>
+        </View>
 
-        {/* Scanner card */}
+        <Divider />
+
+        {/* Scanner */}
         <View style={styles.scanner} testID="scanner-card">
-          <View style={styles.scannerFrame}>
-            <Ionicons name="scan-outline" size={64} color={Colors.onPrimary} />
-            <View style={[styles.corner, styles.cornerTL]} />
-            <View style={[styles.corner, styles.cornerTR]} />
-            <View style={[styles.corner, styles.cornerBL]} />
-            <View style={[styles.corner, styles.cornerBR]} />
+          {/* corner markers */}
+          {[styles.ctl, styles.ctr, styles.cbl, styles.cbr].map((s, i) => (
+            <View key={i} style={[styles.corner, s]} />
+          ))}
+          <View style={styles.scannerInner}>
+            <Ionicons name="scan-outline" size={48} color={Colors.primary} />
+            <Text style={styles.scannerText}>Align package QR</Text>
+            <View style={styles.scannerHint}>
+              <View style={styles.scannerDot} />
+              <Text style={styles.scannerHintText}>STANDBY</Text>
+            </View>
           </View>
           <TouchableOpacity style={styles.scanBtn} onPress={handleScan} testID="scan-button">
-            <Ionicons name="qr-code-outline" size={18} color={Colors.primary} />
-            <Text style={styles.scanBtnText}>Scan package</Text>
+            <Ionicons name="qr-code-outline" size={14} color={Colors.onPrimary} />
+            <Text style={styles.scanBtnText}>INITIATE SCAN</Text>
           </TouchableOpacity>
         </View>
 
+        <Divider />
+
         {/* Search */}
-        <View style={styles.search} testID="search-input-wrap">
-          <Ionicons name="search" size={18} color={Colors.textMuted} />
+        <View style={styles.searchRow}>
+          <Ionicons name="search" size={14} color={Colors.textMuted} />
           <TextInput
+            testID="search-input"
+            placeholder="Search index..."
+            placeholderTextColor={Colors.textSubtle}
             value={query}
             onChangeText={setQuery}
-            placeholder="Search materials..."
-            placeholderTextColor={Colors.textSubtle}
             style={styles.input}
-            testID="search-input"
           />
         </View>
 
-        {/* Category chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chips} contentContainerStyle={{ gap: 8 }}>
-          {categories.map(c => (
-            <TouchableOpacity
-              key={c}
-              onPress={() => setActive(c)}
-              style={[styles.chip, active === c && styles.chipActive]}
-              testID={`chip-${c.toLowerCase()}`}
-            >
-              <Text style={[styles.chipText, active === c && styles.chipTextActive]}>{c}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+          {['ALL', 'Shipping', 'Food'].map(c => (
+            <TouchableOpacity key={c} onPress={() => setActive(c)} testID={`chip-${c.toLowerCase()}`}>
+              <Chip label={c} active={active === c} />
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* Materials list */}
-        <View style={{ gap: Spacing.m, marginTop: Spacing.m }}>
-          {visible.map(m => (
+        <Divider />
+
+        {/* Material index */}
+        <View style={styles.sectionHead}>
+          <Label>Material Index</Label>
+          <Text style={styles.count}>[ {filtered.length} ]</Text>
+        </View>
+
+        <View style={styles.list}>
+          {filtered.map((m, idx) => (
             <TouchableOpacity
               key={m.id}
-              style={styles.materialCard}
+              style={[styles.matRow, idx < filtered.length - 1 && styles.matBorder]}
               onPress={() => router.push(`/material/${m.id}` as any)}
               testID={`material-${m.id}`}
             >
-              <Image source={{ uri: m.image }} style={styles.materialImg} />
-              <View style={{ flex: 1, marginLeft: Spacing.m, justifyContent: 'space-between' }}>
-                <View>
-                  <Pill label={m.category} />
-                  <Text style={styles.materialName} numberOfLines={1}>{m.name}</Text>
-                </View>
-                <View style={styles.materialMeta}>
-                  <Ionicons name="time-outline" size={13} color={Colors.textMuted} />
-                  <Text style={styles.materialMetaText}>{m.dissolve_time}</Text>
-                </View>
+              <View style={styles.matIndex}>
+                <Text style={styles.matIndexText}>{String(idx + 1).padStart(2, '0')}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.textSubtle} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.matName}>{m.name}</Text>
+                <Text style={styles.matMeta}>{m.category.toUpperCase()} · {m.dissolve_time}</Text>
+              </View>
+              <Ionicons name="arrow-forward" size={14} color={Colors.textMuted} />
             </TouchableOpacity>
           ))}
-          {visible.length === 0 && <Text style={styles.empty}>No materials found.</Text>}
+          {filtered.length === 0 && <Text style={styles.empty}>No matches found.</Text>}
         </View>
 
         <View style={{ height: Spacing.xxl }} />
@@ -119,32 +118,35 @@ export default function Disposal() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   scroll: { paddingHorizontal: Spacing.l, paddingTop: Spacing.m, paddingBottom: Spacing.xxl },
-  title: { fontFamily: Fonts.bold, fontSize: 30, color: Colors.text, letterSpacing: -0.8, marginTop: 6, lineHeight: 34 },
-  sub: { fontFamily: Fonts.regular, fontSize: 13, color: Colors.textMuted, marginTop: 10, lineHeight: 19 },
+  headerRow: { paddingVertical: Spacing.l, gap: 12 },
+  title: { fontFamily: Fonts.thin, fontSize: 40, color: Colors.text, letterSpacing: -1.2, lineHeight: 44, marginTop: 8 },
 
-  scanner: { marginTop: Spacing.l, backgroundColor: Colors.primary, borderRadius: Radius.xl, padding: Spacing.l, alignItems: 'center', ...Shadow.card },
-  scannerFrame: { width: '100%', aspectRatio: 1.4, borderRadius: Radius.lg, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.06)', position: 'relative' },
-  corner: { position: 'absolute', width: 24, height: 24, borderColor: Colors.onPrimary },
-  cornerTL: { top: 14, left: 14, borderTopWidth: 2, borderLeftWidth: 2, borderTopLeftRadius: 6 },
-  cornerTR: { top: 14, right: 14, borderTopWidth: 2, borderRightWidth: 2, borderTopRightRadius: 6 },
-  cornerBL: { bottom: 14, left: 14, borderBottomWidth: 2, borderLeftWidth: 2, borderBottomLeftRadius: 6 },
-  cornerBR: { bottom: 14, right: 14, borderBottomWidth: 2, borderRightWidth: 2, borderBottomRightRadius: 6 },
-  scanBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: Spacing.m, backgroundColor: Colors.onPrimary, paddingHorizontal: 20, paddingVertical: 12, borderRadius: Radius.pill },
-  scanBtnText: { fontFamily: Fonts.semibold, color: Colors.primary, fontSize: 13 },
+  scanner: { marginTop: Spacing.l, marginBottom: Spacing.l, paddingHorizontal: Spacing.l, paddingVertical: Spacing.xl, position: 'relative' },
+  corner: { position: 'absolute', width: 16, height: 16, borderColor: Colors.primary },
+  ctl: { top: 0, left: 0, borderTopWidth: 1, borderLeftWidth: 1 },
+  ctr: { top: 0, right: 0, borderTopWidth: 1, borderRightWidth: 1 },
+  cbl: { bottom: 0, left: 0, borderBottomWidth: 1, borderLeftWidth: 1 },
+  cbr: { bottom: 0, right: 0, borderBottomWidth: 1, borderRightWidth: 1 },
+  scannerInner: { alignItems: 'center', paddingVertical: Spacing.l, gap: 12 },
+  scannerText: { fontFamily: Fonts.light, fontSize: 16, color: Colors.text, letterSpacing: 0.5 },
+  scannerHint: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  scannerDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.warning },
+  scannerHintText: { fontFamily: Fonts.semibold, fontSize: 9, letterSpacing: 2, color: Colors.warning },
+  scanBtn: { flexDirection: 'row', alignSelf: 'center', alignItems: 'center', gap: 8, backgroundColor: Colors.primary, paddingHorizontal: 20, paddingVertical: 12, borderRadius: Radius.pill, marginTop: Spacing.l },
+  scanBtnText: { fontFamily: Fonts.bold, fontSize: 10, color: Colors.onPrimary, letterSpacing: 2 },
 
-  search: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.card, borderRadius: Radius.pill, paddingHorizontal: 16, marginTop: Spacing.l, borderWidth: 1, borderColor: Colors.border },
-  input: { flex: 1, fontFamily: Fonts.medium, color: Colors.text, paddingVertical: 14, paddingHorizontal: 10, fontSize: 14 },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: Spacing.m },
+  input: { flex: 1, fontFamily: Fonts.regular, fontSize: 14, color: Colors.text, paddingVertical: 10 },
+  chips: { gap: 8, paddingVertical: 4 },
 
-  chips: { marginTop: Spacing.m, flexGrow: 0 },
-  chip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: Radius.pill, backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.border },
-  chipActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  chipText: { fontFamily: Fonts.semibold, fontSize: 12, color: Colors.textMuted, letterSpacing: 0.3 },
-  chipTextActive: { color: Colors.onPrimary },
-
-  materialCard: { flexDirection: 'row', backgroundColor: Colors.card, borderRadius: Radius.lg, padding: Spacing.m, alignItems: 'center', borderWidth: 1, borderColor: Colors.border },
-  materialImg: { width: 64, height: 64, borderRadius: Radius.md, backgroundColor: Colors.accent },
-  materialName: { fontFamily: Fonts.bold, fontSize: 15, color: Colors.text, marginTop: 8, letterSpacing: -0.2 },
-  materialMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6 },
-  materialMetaText: { fontFamily: Fonts.medium, fontSize: 11, color: Colors.textMuted },
-  empty: { fontFamily: Fonts.medium, color: Colors.textMuted, textAlign: 'center', marginTop: Spacing.l },
+  sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Spacing.l, paddingBottom: Spacing.s },
+  count: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textSubtle, letterSpacing: 1 },
+  list: {},
+  matRow: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 18 },
+  matBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
+  matIndex: { width: 36 },
+  matIndexText: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textSubtle, letterSpacing: 1 },
+  matName: { fontFamily: Fonts.light, fontSize: 18, color: Colors.text, letterSpacing: -0.3 },
+  matMeta: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textMuted, letterSpacing: 1, marginTop: 4, textTransform: 'uppercase' },
+  empty: { fontFamily: Fonts.regular, color: Colors.textMuted, textAlign: 'center', marginTop: Spacing.l },
 });

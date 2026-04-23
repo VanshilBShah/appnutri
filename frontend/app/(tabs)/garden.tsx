@@ -1,101 +1,110 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Fonts, Radius, Spacing, Shadow } from '../../src/theme';
-import { Card, Overline, Progress } from '../../src/ui';
+import { Colors, Fonts, Radius, Spacing } from '../../src/theme';
+import { Label, Divider, Progress } from '../../src/ui';
 import { api, Stats } from '../../src/api';
 
-const PLANT_IMAGE = 'https://images.pexels.com/photos/7944395/pexels-photo-7944395.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940';
-
 const LEVELS = [
-  { level: 1, name: 'Seed',       desc: 'The beginning.' },
-  { level: 2, name: 'Sprout',     desc: 'Small, but alive.' },
-  { level: 3, name: 'Sapling',    desc: 'Reaching for light.' },
-  { level: 4, name: 'Young Tree', desc: 'Roots going deep.' },
-  { level: 5, name: 'Grove',      desc: 'An ecosystem of one.' },
+  { level: 1, name: 'SEED',       desc: 'origin' },
+  { level: 2, name: 'SPROUT',     desc: 'awakened' },
+  { level: 3, name: 'SAPLING',    desc: 'ascending' },
+  { level: 4, name: 'YOUNG TREE', desc: 'rooted' },
+  { level: 5, name: 'GROVE',      desc: 'ecosystem' },
 ];
 
 export default function Garden() {
   const [stats, setStats] = useState<Stats | null>(null);
 
-  const load = useCallback(async () => {
-    try { setStats(await api.stats()); } catch (e) { /* noop */ }
-  }, []);
-
+  const load = useCallback(async () => { try { setStats(await api.stats()); } catch {} }, []);
   useEffect(() => { load(); }, [load]);
 
   const dissolve = async () => {
-    try {
-      const res = await api.dissolve('m1', 'Soil');
-      setStats(res.stats);
-    } catch (e) { /* noop */ }
+    try { const r = await api.dissolve('m1', 'Soil'); setStats(r.stats); } catch {}
   };
 
   const level = stats?.garden_level ?? 1;
-  const levelInfo = LEVELS.find(l => l.level === level) ?? LEVELS[0];
+  const progress = stats?.garden_progress ?? 0;
+  const current = LEVELS.find(l => l.level === level) ?? LEVELS[0];
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']} testID="garden-screen">
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Overline>Eco-Garden</Overline>
-        <Text style={styles.title}>Your living{'\n'}record of repair.</Text>
+        <View style={styles.headerRow}>
+          <Label>02 · Eco-Garden</Label>
+          <Text style={styles.title}>Living{'\n'}record.</Text>
+        </View>
 
-        {/* Plant hero */}
-        <View style={styles.plantCard} testID="plant-hero">
-          <Image source={{ uri: PLANT_IMAGE }} style={styles.plantImage} />
-          <View style={styles.plantOverlay}>
-            <View style={styles.levelBadge}>
-              <Ionicons name="leaf" size={12} color={Colors.primary} />
-              <Text style={styles.levelBadgeText}>Level {level}</Text>
-            </View>
-            <Text style={styles.plantName}>{levelInfo.name}</Text>
-            <Text style={styles.plantDesc}>{levelInfo.desc}</Text>
+        <Divider />
+
+        {/* Pulse visualization */}
+        <View style={styles.pulseWrap} testID="plant-hero">
+          <View style={[styles.ring, styles.ring3]} />
+          <View style={[styles.ring, styles.ring2]} />
+          <View style={[styles.ring, styles.ring1]} />
+          <View style={styles.core}>
+            <Ionicons name="leaf" size={32} color={Colors.primary} />
+          </View>
+          <View style={styles.pulseLabel}>
+            <Text style={styles.levelText}>LV{level}</Text>
+            <Text style={styles.levelName}>{current.name}</Text>
+            <Text style={styles.levelDesc}>// {current.desc}</Text>
           </View>
         </View>
 
-        {/* Progress to next */}
-        <Card style={styles.progressCard} testID="garden-progress">
-          <View style={styles.progressRow}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.progressLabel}>Progress to {LEVELS[Math.min(level, LEVELS.length - 1)]?.name}</Text>
-              <Text style={styles.progressValue}>{Math.round((stats?.garden_progress ?? 0) * 100)}%</Text>
-            </View>
-            <View style={styles.progressIcon}>
-              <Ionicons name="trending-up" size={18} color={Colors.primary} />
-            </View>
-          </View>
-          <View style={{ marginTop: Spacing.m }}>
-            <Progress value={stats?.garden_progress ?? 0} color={Colors.secondary} />
-          </View>
-        </Card>
+        <Divider />
 
-        {/* Action */}
-        <TouchableOpacity style={styles.primaryBtn} onPress={dissolve} testID="log-dissolve-btn">
-          <Ionicons name="water" size={18} color={Colors.onPrimary} />
-          <Text style={styles.primaryBtnText}>Log a dissolve</Text>
+        {/* Progress */}
+        <View style={styles.progressBlock} testID="garden-progress">
+          <View style={styles.progressRow}>
+            <Label>Next stage</Label>
+            <Text style={styles.progressPct}>{String(Math.round(progress * 100)).padStart(2, '0')}%</Text>
+          </View>
+          <View style={{ marginTop: 12 }}>
+            <Progress value={progress} />
+          </View>
+          <Text style={styles.progressSub}>
+            {Math.round((1 - progress) * 7) + 1} more dissolves to {LEVELS[Math.min(level, LEVELS.length - 1)]?.name}
+          </Text>
+        </View>
+
+        {/* CTA */}
+        <TouchableOpacity style={styles.cta} onPress={dissolve} testID="log-dissolve-btn">
+          <View style={styles.ctaInner}>
+            <Ionicons name="add" size={16} color={Colors.onPrimary} />
+            <Text style={styles.ctaText}>LOG DISSOLVE</Text>
+          </View>
         </TouchableOpacity>
 
-        {/* Level ladder */}
-        <Text style={styles.sectionHead}>Growth stages</Text>
-        <View style={{ gap: Spacing.s }}>
-          {LEVELS.map(l => {
+        <Divider />
+
+        {/* Ladder */}
+        <View style={styles.sectionHead}>
+          <Label>Growth stages</Label>
+          <Text style={styles.count}>[ {level}/5 ]</Text>
+        </View>
+
+        <View>
+          {LEVELS.map((l, idx) => {
             const unlocked = level >= l.level;
-            const current = level === l.level;
+            const isCurrent = level === l.level;
             return (
-              <View key={l.level} style={[styles.levelRow, current && styles.levelRowCurrent]} testID={`stage-${l.level}`}>
-                <View style={[styles.levelDot, unlocked && styles.levelDotUnlocked]}>
-                  {unlocked ? (
-                    <Ionicons name="checkmark" size={14} color={Colors.onPrimary} />
-                  ) : (
-                    <Text style={styles.levelDotText}>{l.level}</Text>
-                  )}
+              <View key={l.level} style={[styles.stageRow, idx < LEVELS.length - 1 && styles.stageBorder]} testID={`stage-${l.level}`}>
+                <Text style={[styles.stageIndex, !unlocked && { color: Colors.textSubtle }]}>{String(l.level).padStart(2, '0')}</Text>
+                <View style={styles.stageLine}>
+                  <View style={[styles.stageDot, unlocked && styles.stageDotOn]} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.levelName, !unlocked && { color: Colors.textMuted }]}>{l.name}</Text>
-                  <Text style={styles.levelDescText}>{l.desc}</Text>
+                  <Text style={[styles.stageName, !unlocked && { color: Colors.textSubtle }]}>{l.name}</Text>
+                  <Text style={styles.stageDesc}>// {l.desc}</Text>
                 </View>
-                {current && <View style={styles.nowPill}><Text style={styles.nowPillText}>NOW</Text></View>}
+                {isCurrent && (
+                  <View style={styles.nowTag}>
+                    <View style={styles.nowDot} />
+                    <Text style={styles.nowText}>NOW</Text>
+                  </View>
+                )}
               </View>
             );
           })}
@@ -109,35 +118,42 @@ export default function Garden() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
-  scroll: { paddingHorizontal: Spacing.l, paddingTop: Spacing.m, paddingBottom: Spacing.xxl },
-  title: { fontFamily: Fonts.bold, fontSize: 30, color: Colors.text, letterSpacing: -0.8, marginTop: 6, lineHeight: 34 },
+  scroll: { paddingHorizontal: Spacing.l, paddingBottom: Spacing.xxl },
+  headerRow: { paddingVertical: Spacing.l, gap: 12 },
+  title: { fontFamily: Fonts.thin, fontSize: 40, color: Colors.text, letterSpacing: -1.2, lineHeight: 44, marginTop: 8 },
 
-  plantCard: { marginTop: Spacing.l, borderRadius: Radius.xl, overflow: 'hidden', backgroundColor: Colors.primary, ...Shadow.card },
-  plantImage: { width: '100%', height: 280 },
-  plantOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: Spacing.l, backgroundColor: 'rgba(23,58,36,0.55)' },
-  levelBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', backgroundColor: Colors.onPrimary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.pill },
-  levelBadgeText: { fontFamily: Fonts.bold, fontSize: 10, letterSpacing: 0.8, color: Colors.primary },
-  plantName: { fontFamily: Fonts.bold, fontSize: 26, color: Colors.onPrimary, letterSpacing: -0.5, marginTop: 8 },
-  plantDesc: { fontFamily: Fonts.medium, fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 4 },
+  pulseWrap: { height: 300, alignItems: 'center', justifyContent: 'center', marginVertical: Spacing.l },
+  ring: { position: 'absolute', borderRadius: 9999, borderWidth: StyleSheet.hairlineWidth, borderColor: Colors.primaryDim },
+  ring1: { width: 120, height: 120 },
+  ring2: { width: 180, height: 180, borderColor: Colors.border },
+  ring3: { width: 240, height: 240, borderColor: Colors.hairline },
+  core: { width: 70, height: 70, borderRadius: 35, borderWidth: 1, borderColor: Colors.primary, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.surface },
+  pulseLabel: { position: 'absolute', bottom: 0, alignItems: 'center', gap: 2 },
+  levelText: { fontFamily: Fonts.thin, fontSize: 34, color: Colors.primary, letterSpacing: -1 },
+  levelName: { fontFamily: Fonts.semibold, fontSize: 11, letterSpacing: 3, color: Colors.text },
+  levelDesc: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textMuted, letterSpacing: 0.5 },
 
-  progressCard: { marginTop: Spacing.m },
-  progressRow: { flexDirection: 'row', alignItems: 'center' },
-  progressLabel: { fontFamily: Fonts.medium, fontSize: 12, color: Colors.textMuted, letterSpacing: 0.3 },
-  progressValue: { fontFamily: Fonts.bold, fontSize: 26, color: Colors.text, letterSpacing: -0.5, marginTop: 2 },
-  progressIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.secondaryMuted, alignItems: 'center', justifyContent: 'center' },
+  progressBlock: { paddingVertical: Spacing.l },
+  progressRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
+  progressPct: { fontFamily: Fonts.thin, fontSize: 32, color: Colors.text, letterSpacing: -1 },
+  progressSub: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 10 },
 
-  primaryBtn: { marginTop: Spacing.m, backgroundColor: Colors.primary, paddingVertical: 16, borderRadius: Radius.pill, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, ...Shadow.card },
-  primaryBtnText: { color: Colors.onPrimary, fontFamily: Fonts.semibold, fontSize: 14 },
+  cta: { marginVertical: Spacing.m, borderWidth: 1, borderColor: Colors.primary, borderRadius: Radius.pill, overflow: 'hidden' },
+  ctaInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, backgroundColor: Colors.primary },
+  ctaText: { fontFamily: Fonts.bold, fontSize: 11, color: Colors.onPrimary, letterSpacing: 2.5 },
 
-  sectionHead: { fontFamily: Fonts.bold, fontSize: 18, color: Colors.text, letterSpacing: -0.3, marginTop: Spacing.xl, marginBottom: Spacing.m },
+  sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Spacing.l, paddingBottom: Spacing.s },
+  count: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textSubtle, letterSpacing: 1 },
 
-  levelRow: { flexDirection: 'row', alignItems: 'center', padding: Spacing.m, backgroundColor: Colors.card, borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, gap: 14 },
-  levelRowCurrent: { borderColor: Colors.secondary, backgroundColor: Colors.secondaryMuted },
-  levelDot: { width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.accent, alignItems: 'center', justifyContent: 'center' },
-  levelDotUnlocked: { backgroundColor: Colors.primary },
-  levelDotText: { fontFamily: Fonts.bold, fontSize: 13, color: Colors.textMuted },
-  levelName: { fontFamily: Fonts.semibold, fontSize: 14, color: Colors.text },
-  levelDescText: { fontFamily: Fonts.regular, fontSize: 11, color: Colors.textMuted, marginTop: 2 },
-  nowPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.pill, backgroundColor: Colors.primary },
-  nowPillText: { fontFamily: Fonts.bold, color: Colors.onPrimary, fontSize: 9, letterSpacing: 1 },
+  stageRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 16, gap: 16 },
+  stageBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
+  stageIndex: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.text, letterSpacing: 1, width: 24 },
+  stageLine: { width: 12, alignItems: 'center' },
+  stageDot: { width: 6, height: 6, borderRadius: 4, backgroundColor: Colors.border },
+  stageDotOn: { backgroundColor: Colors.primary },
+  stageName: { fontFamily: Fonts.medium, fontSize: 13, color: Colors.text, letterSpacing: 1 },
+  stageDesc: { fontFamily: Fonts.regular, fontSize: 10, color: Colors.textSubtle, letterSpacing: 0.3, marginTop: 2 },
+  nowTag: { flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1, borderColor: Colors.primary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: Radius.pill },
+  nowDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.primary },
+  nowText: { fontFamily: Fonts.bold, fontSize: 9, color: Colors.primary, letterSpacing: 1.5 },
 });
